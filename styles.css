@@ -1,0 +1,45 @@
+* {
+   margin: 0;
+   padding: 0;
+}
+
+body {
+   display: grid;
+   grid-template-columns: 1fr;
+   min-height: 100vh;
+   grid-template-rows: 50px minmax(calc(100vh - 80px), auto) 30px;
+}
+
+header {
+   color: white;
+   background-image: linear-gradient(to left, coral, tomato, red, darkred, black);
+   background-size: 400%;
+   animation-name: camaleon;
+   animation-fill-mode: both;
+   animation-duration: 5s;
+   animation-iteration-count: infinite;
+   animation-direction: alternate;
+}
+
+header nav {
+   width: 100%;
+}
+
+main {
+   background-color: rgb(149, 149, 149);
+   color: black;
+   padding: 10px;
+}
+
+footer {
+   background-color: rgb(39, 39, 39);
+   color: white;
+}
+
+header,
+footer {
+   display: flex;
+   flex-flow: row nowrap;
+   align-items: center;
+   justify-content: center;
+}
