@@ -1,37 +1,36 @@
 <?php
 
-require_once 'courier.php';
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+require_once 'courier.php';
 
 define('URL', 'https://developers.baselinker.com/recruitment/api'); 
 define('KEY', 'EB76ykK1ws1fSE8nNTBt');
 
-$sender_company = filter_input(INPUT_POST, 'sender_company', FILTER_UNSAFE_RAW);
-$sender_fullname = filter_input(INPUT_POST, 'sender_fullname', FILTER_UNSAFE_RAW);
-$sender_email = filter_input(INPUT_POST, 'sender_email', FILTER_SANITIZE_EMAIL);
-$sender_phone = filter_input(INPUT_POST, 'sender_phone', FILTER_UNSAFE_RAW);
-$sender_addressLine = filter_input(INPUT_POST, 'sender_address', FILTER_UNSAFE_RAW);
-$sender_city = filter_input(INPUT_POST, 'sender_city', FILTER_UNSAFE_RAW);
-$sender_zip = filter_input(INPUT_POST, 'sender_postalcode', FILTER_UNSAFE_RAW);
-$sender_country = filter_input(INPUT_POST, 'sender_country', FILTER_UNSAFE_RAW);
-$sender_state = filter_input(INPUT_POST, 'sender_state', FILTER_UNSAFE_RAW);
-$sender_vat = filter_input(INPUT_POST, 'sender_vat', FILTER_UNSAFE_RAW);
-$sender_eori = filter_input(INPUT_POST, 'sender_eori', FILTER_UNSAFE_RAW);
+$inputs = json_decode(file_get_contents('php://input'), true);
 
-$delivery_company = filter_input(INPUT_POST, 'delivery_company', FILTER_UNSAFE_RAW);
-$delivery_fullname = filter_input(INPUT_POST, 'delivery_fullname', FILTER_UNSAFE_RAW);
-$delivery_email = filter_input(INPUT_POST, 'delivery_email', FILTER_UNSAFE_RAW);
-$delivery_phone = filter_input(INPUT_POST, 'delivery_phone', FILTER_UNSAFE_RAW);
-$delivery_address = filter_input(INPUT_POST, 'delivery_address', FILTER_UNSAFE_RAW);
-$delivery_city = filter_input(INPUT_POST, 'delivery_city', FILTER_UNSAFE_RAW);
-$delivery_country = filter_input(INPUT_POST, 'delivery_country', FILTER_UNSAFE_RAW);
-$delivery_postalcode = filter_input(INPUT_POST, 'delivery_postalcode', FILTER_UNSAFE_RAW);
-$delivery_state = filter_input(INPUT_POST, 'delivery_state', FILTER_UNSAFE_RAW);
-$delivery_vat = filter_input(INPUT_POST, 'delivery_vat', FILTER_UNSAFE_RAW);
-$delivery_eori = filter_input(INPUT_POST, 'delivery_eori', FILTER_UNSAFE_RAW);
+$sender_company   = trim($inputs['sender_company'] ?? '');
+$sender_fullname = trim($inputs['sender_fullname'] ?? '');
+$sender_email    = filter_var($inputs['sender_email'] ?? '', FILTER_VALIDATE_EMAIL);
+$sender_phone    = trim($inputs['sender_phone'] ?? '');
+$sender_addressLine = trim($inputs['sender_address'] ?? '');
+$sender_city     = trim($inputs['sender_city'] ?? '');
+$sender_zip      = trim($inputs['sender_postalcode'] ?? '');
+$sender_country  = trim($inputs['sender_country'] ?? '');
+$sender_state    = trim($inputs['sender_state'] ?? '');
+$sender_vat      = trim($inputs['sender_vat'] ?? '');
+$sender_eori     = trim($inputs['sender_eori'] ?? '');
+
+$delivery_company   = trim($inputs['delivery_company'] ?? '');
+$delivery_fullname = trim($inputs['delivery_fullname'] ?? '');
+$delivery_email    = filter_var($inputs['delivery_email'] ?? '', FILTER_VALIDATE_EMAIL);
+$delivery_phone    = trim($inputs['delivery_phone'] ?? '');
+$delivery_address  = trim($inputs['delivery_address'] ?? '');
+$delivery_city     = trim($inputs['delivery_city'] ?? '');
+$delivery_country  = trim($inputs['delivery_country'] ?? '');
+$delivery_postalcode = trim($inputs['delivery_postalcode'] ?? '');
+$delivery_state    = trim($inputs['delivery_state'] ?? '');
+$delivery_vat      = trim($inputs['delivery_vat'] ?? '');
+$delivery_eori     = trim($inputs['delivery_eori'] ?? '');
 
 $shippmentData = [
    'sender_company' => $sender_company,
@@ -39,7 +38,7 @@ $shippmentData = [
    'sender_email' => $sender_email,
    'sender_phone' => $sender_phone,
    'sender_addressLine' => $sender_addressLine,
-   'sender_city' => $sender_city,
+   // 'sender_city' => $sender_city,
    'sender_zip' => $sender_zip,
    'sender_country' => $sender_country,
    'sender_state' => $sender_state,
@@ -62,4 +61,5 @@ $shippmentData = [
 $shipment = new Courier($shippmentData, URL, KEY);
 $response_data = $shipment->send();
 
-var_dump($response_data);
+header('Content-Type: application/json');
+echo json_encode($response_data);

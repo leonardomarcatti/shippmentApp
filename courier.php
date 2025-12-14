@@ -72,7 +72,7 @@ final class Courier
       return $payload;
    }
 
-   public function send(): array
+   public function send()
    {
       $connection = curl_init($this->url);
       $payload = $this->createShippment();
@@ -96,9 +96,8 @@ final class Courier
 
       curl_close($connection);
 
-      $response_data = json_decode($response, true);
-
-      return $response_data;
+      return json_decode($response);
+      
    }
 
 }
