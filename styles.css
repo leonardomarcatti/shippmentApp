@@ -31,6 +31,10 @@ main {
    padding: 10px;
 }
 
+form {
+   width: 95vw;
+}
+
 footer {
    background-color: rgb(39, 39, 39);
    color: white;
@@ -42,4 +46,12 @@ footer {
    flex-flow: row nowrap;
    align-items: center;
    justify-content: center;
+}
+
+.hidden {
+   display: none;
+}
+
+.show {
+   display: block;
 }

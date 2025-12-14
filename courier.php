@@ -1,9 +1,6 @@
 <?php
 
-define('URL', 'https://developers.baselinker.com/recruitment/api');
-define('KEY', 'EB76ykK1ws1fSE8nNTBt');
-
-final class courier 
+final class Courier 
 {
    private array $shippmentData;
    private string $url;
@@ -14,20 +11,25 @@ final class courier
       $this->shippmentData = $data;
       $this->url = $url;
       $this->key = $key;
-
    }
 
-   public  function createShippment()
+   public function getData()
+   {
+       return ($this->shippmentData['delivery_eori']);
+   }
+
+   private function createShippment()
    {
       $payload = [
-         'Apikey' => KEY,
+         'Apikey' => $this->key,
          'Command' => 'OrderShipment',
          'Shipment' => [
             'Service' => 'PPTT',
             'ShipperReference' => 'REF1234567890',
-            'Weight' => $this->shippmentData['weight'],
-            'Value' => $this->shippmentData['value'],
+            'Weight' => 2,
+            'Value' => 32.44,
             'Currency' => 'USD',
+            'EuEori' => $this->shippmentData['delivery_eori'],
             'ConsignorAddress' => [
                'FullName' => $this->shippmentData['sender_fullname'],
                'Company' => $this->shippmentData['sender_company'],
@@ -37,6 +39,9 @@ final class courier
                'Country' => $this->shippmentData['sender_country'],
                'Phone ' => $this->shippmentData['sender_phone'],
                'Email' => $this->shippmentData['sender_email'],
+               'State' => $this->shippmentData['sender_state'],
+               'EuEori' => $this->shippmentData['sender_eori'],
+               'Vat' => $this->shippmentData['sender_vat'],
             ],
             'ConsigneeAddress' => [
                'Name' => $this->shippmentData['delivery_fullname'],
@@ -47,6 +52,8 @@ final class courier
                'Country' => $this->shippmentData['delivery_country'],
                'Phone' => $this->shippmentData['delivery_phone'],
                'Email' => $this->shippmentData['delivery_email'],
+               'State' => $this->shippmentData['delivery_state'],
+               'Vat' => $this->shippmentData['delivery_vat'],
             ],
             'Products' => [
                [
@@ -61,7 +68,37 @@ final class courier
             'LabelFormat' => 'PDF',
          ]
       ];
+
+      return $payload;
    }
 
-   
+   public function send(): array
+   {
+      $connection = curl_init($this->url);
+      $payload = $this->createShippment();
+      $json = json_encode($payload);
+
+      curl_setopt_array($connection, [
+         CURLOPT_POST => true,
+         CURLOPT_POSTFIELDS => $json,
+         CURLOPT_RETURNTRANSFER => true,
+         CURLOPT_HTTPHEADER => [
+            'Content-Type: application/json',
+            'Accept: application/json',
+         ],
+      ]);
+
+      $response = curl_exec($connection);
+
+      if ($response === false) {
+         die('Erro cURL: ' . curl_error($connection));
+      }
+
+      curl_close($connection);
+
+      $response_data = json_decode($response, true);
+
+      return $response_data;
+   }
+
 }
