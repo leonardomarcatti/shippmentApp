@@ -64,15 +64,7 @@ delivery_country.addEventListener('change', event => {
    }
 })
 
-document.querySelector('#form').addEventListener('submit', event => {
-   event.preventDefault()
-   const data = new FormData(event.target)
-   const shippmentData = Object.fromEntries(data.entries())
-   newPackage(shippmentData)
-})
-
 const generatePDF = (data) => {
-
    if (data?.ErrorLevel !== 0) {
       document.querySelector('#errorText').innerHTML = data.Error
       document.querySelector('#data_sent_error_btn').click()
@@ -83,14 +75,11 @@ const generatePDF = (data) => {
       { TrackingNumber: data.Shipment.TrackingNumber, ShipperReference: data.Shipment.ShipperReference, Service: data.Shipment.Service, Carrier: data.Shipment.Carrier }
    ]
 
-   // jsPDF vem do UMD
    const { jsPDF } = window.jspdf
    const doc = new jsPDF()
-
    const columns = Object.keys(jsonData[0])
    const rows = jsonData.map(item => Object.values(item))
-
-   doc.text("User Data Report", 10, 10)
+   doc.text("Shipment Data", 10, 10)
 
    doc.autoTable({
       head: [columns],
@@ -101,8 +90,7 @@ const generatePDF = (data) => {
    doc.save("jsonData.pdf")
 }
 
-
-const newPackage = async (shipmentData) => {   
+const newPackage = async (shipmentData) => {
    const response = await fetch('api.php', {
       method: 'POST',
       headers: {
@@ -111,9 +99,16 @@ const newPackage = async (shipmentData) => {
       body: JSON.stringify(shipmentData)
    });
 
-   const json = await response.json()   
+   const json = await response.json()
    document.querySelector('#data_sent_btn').click()
-
    generatePDF(json)
-   
 }
+
+document.querySelector('#form').addEventListener('submit', event => {
+   event.preventDefault()
+   const data = new FormData(event.target)
+   const shippmentData = Object.fromEntries(data.entries())
+   newPackage(shippmentData)
+})
+
+

@@ -3,8 +3,7 @@
 
 require_once 'courier.php';
 
-define('URL', 'https://developers.baselinker.com/recruitment/api'); 
-define('KEY', 'EB76ykK1ws1fSE8nNTBt');
+$params = ['url' => 'https://developers.baselinker.com/recruitment/api', 'key' => 'EB76ykK1ws1fSE8nNTBt'];
 
 $inputs = json_decode(file_get_contents('php://input'), true);
 
@@ -38,7 +37,7 @@ $shippmentData = [
    'sender_email' => $sender_email,
    'sender_phone' => $sender_phone,
    'sender_addressLine' => $sender_addressLine,
-   // 'sender_city' => $sender_city,
+   'sender_city' => $sender_city,
    'sender_zip' => $sender_zip,
    'sender_country' => $sender_country,
    'sender_state' => $sender_state,
@@ -58,8 +57,8 @@ $shippmentData = [
    'delivery_postalcode' => $delivery_postalcode
    ];
 
-$shipment = new Courier($shippmentData, URL, KEY);
-$response_data = $shipment->send();
+$shipment = new Courier();
+$response_data = $shipment->newPackage($shippmentData, $params);
 
 header('Content-Type: application/json');
 echo json_encode($response_data);

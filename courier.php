@@ -2,26 +2,10 @@
 
 final class Courier 
 {
-   private array $shippmentData;
-   private string $url;
-   private string $key;
-
-   public function __construct(array $data, string $url, string $key)
-   {
-      $this->shippmentData = $data;
-      $this->url = $url;
-      $this->key = $key;
-   }
-
-   public function getData()
-   {
-       return ($this->shippmentData['delivery_eori']);
-   }
-
-   private function createShippment()
+   private function createShippment(array $order, string $key)
    {
       $payload = [
-         'Apikey' => $this->key,
+         'Apikey' => $key,
          'Command' => 'OrderShipment',
          'Shipment' => [
             'Service' => 'PPTT',
@@ -29,31 +13,31 @@ final class Courier
             'Weight' => 2,
             'Value' => 32.44,
             'Currency' => 'USD',
-            'EuEori' => $this->shippmentData['delivery_eori'],
+            'EuEori' => $order['delivery_eori'],
             'ConsignorAddress' => [
-               'FullName' => $this->shippmentData['sender_fullname'],
-               'Company' => $this->shippmentData['sender_company'],
-               'AddressLine1 ' => $this->shippmentData['sender_addressLine'],
-               'City' => $this->shippmentData['sender_city'],
-               'Zip ' => $this->shippmentData['sender_zip'],
-               'Country' => $this->shippmentData['sender_country'],
-               'Phone ' => $this->shippmentData['sender_phone'],
-               'Email' => $this->shippmentData['sender_email'],
-               'State' => $this->shippmentData['sender_state'],
-               'EuEori' => $this->shippmentData['sender_eori'],
-               'Vat' => $this->shippmentData['sender_vat'],
+               'FullName' => $order['sender_fullname'],
+               'Company' => $order['sender_company'],
+               'AddressLine1 ' => $order['sender_addressLine'],
+               'City' => $order['sender_city'],
+               'Zip ' => $order['sender_zip'],
+               'Country' => $order['sender_country'],
+               'Phone ' => $order['sender_phone'],
+               'Email' => $order['sender_email'],
+               'State' => $order['sender_state'],
+               'EuEori' => $order['sender_eori'],
+               'Vat' => $order['sender_vat'],
             ],
             'ConsigneeAddress' => [
-               'Name' => $this->shippmentData['delivery_fullname'],
-               'Company' => $this->shippmentData['delivery_company'],
-               'AddressLine1' => $this->shippmentData['delivery_address'],
-               'City' => $this->shippmentData['delivery_city'],
-               'Zip' => $this->shippmentData['delivery_postalcode'],
-               'Country' => $this->shippmentData['delivery_country'],
-               'Phone' => $this->shippmentData['delivery_phone'],
-               'Email' => $this->shippmentData['delivery_email'],
-               'State' => $this->shippmentData['delivery_state'],
-               'Vat' => $this->shippmentData['delivery_vat'],
+               'Name' => $order['delivery_fullname'],
+               'Company' => $order['delivery_company'],
+               'AddressLine1' => $order['delivery_address'],
+               'City' => $order['delivery_city'],
+               'Zip' => $order['delivery_postalcode'],
+               'Country' => $order['delivery_country'],
+               'Phone' => $order['delivery_phone'],
+               'Email' => $order['delivery_email'],
+               'State' => $order['delivery_state'],
+               'Vat' => $order['delivery_vat'],
             ],
             'Products' => [
                [
@@ -72,10 +56,10 @@ final class Courier
       return $payload;
    }
 
-   public function send()
+   public function newPackage(array $order, array $params)
    {
-      $connection = curl_init($this->url);
-      $payload = $this->createShippment();
+      $connection = curl_init($params['url']);
+      $payload = $this->createShippment($order, $params['key']);
       $json = json_encode($payload);
 
       curl_setopt_array($connection, [
