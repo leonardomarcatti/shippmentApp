@@ -2,7 +2,7 @@
 
 final class Courier 
 {
-   private function createShippment(array $order, string $key)
+   private function createPayload(array $order, string $key)
    {
       $payload = [
          'Apikey' => $key,
@@ -47,7 +47,6 @@ final class Courier
                   'Value' => 10.0,
                   'HsCode' => '8471.30.00',
                ]
-
             ],
             'LabelFormat' => 'PDF',
          ]
@@ -59,7 +58,7 @@ final class Courier
    public function newPackage(array $order, array $params)
    {
       $connection = curl_init($params['url']);
-      $payload = $this->createShippment($order, $params['key']);
+      $payload = $this->createPayload($order, $params['key']);
       $json = json_encode($payload);
 
       curl_setopt_array($connection, [
